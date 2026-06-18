@@ -39,50 +39,49 @@ def send_email_notification(name, email, subject, message):
     try:
         msg = MIMEMultipart('alternative')
         msg['Subject'] = f"📬 New Contact Form Message: {subject}"
-        msg['From']    = GMAIL_USER
-        msg['To']      = GMAIL_USER
+        msg['From'] = GMAIL_USER
+        msg['To'] = GMAIL_USER
 
         html = f"""
-        <html><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;">
-          <div style="max-width:560px;margin:auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
-            <div style="background:linear-gradient(135deg,#6366F1,#A78BFA);padding:24px 30px;">
-              <h2 style="color:#fff;margin:0;">New Message on Your Portfolio</h2>
-            </div>
-            <div style="padding:30px;">
-              <table style="width:100%;border-collapse:collapse;">
-                <tr><td style="padding:8px 0;color:#6b7280;font-size:13px;width:80px;">Name</td>
-                    <td style="padding:8px 0;color:#111;font-weight:600;">{name}</td></tr>
-                <tr><td style="padding:8px 0;color:#6b7280;font-size:13px;">Email</td>
-                    <td style="padding:8px 0;"><a href="mailto:{email}" style="color:#6366F1;">{email}</a></td></tr>
-                <tr><td style="padding:8px 0;color:#6b7280;font-size:13px;">Subject</td>
-                    <td style="padding:8px 0;color:#111;">{subject}</td></tr>
-              </table>
-              <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;"/>
-              <p style="color:#6b7280;font-size:13px;margin-bottom:8px;">Message</p>
-              <p style="color:#111;line-height:1.7;background:#f9f9f9;padding:16px;border-radius:8px;border-left:4px solid #6366F1;">{message}</p>
-              <div style="margin-top:24px;">
-                <a href="mailto:{email}" style="background:#6366F1;color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">
-                  Reply to {name}
-                </a>
-              </div>
-            </div>
-            <div style="background:#f9f9f9;padding:16px 30px;text-align:center;">
-              <p style="color:#9ca3af;font-size:12px;margin:0;">Eesha Portfolio — Contact Form Notification</p>
-            </div>
-          </div>
-        </body></html>
+        <html>
+        <body>
+            <h2>New Portfolio Message</h2>
+            <p><b>Name:</b> {name}</p>
+            <p><b>Email:</b> {email}</p>
+            <p><b>Subject:</b> {subject}</p>
+            <p><b>Message:</b> {message}</p>
+        </body>
+        </html>
         """
 
         msg.attach(MIMEText(html, 'html'))
 
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        print("STEP 1: Starting SMTP")
+
+        with smtplib.SMTP_SSL(
+            'smtp.gmail.com',
+            465,
+            timeout=10
+        ) as server:
+
+            print("STEP 2: Logging in")
             server.login(GMAIL_USER, GMAIL_PASS)
-            server.sendmail(GMAIL_USER, GMAIL_USER, msg.as_string())
+
+            print("STEP 3: Sending")
+            server.sendmail(
+                GMAIL_USER,
+                GMAIL_USER,
+                msg.as_string()
+            )
+
+            print("STEP 4: Done")
 
         print(f"✅ Email notification sent for message from {name}")
 
     except Exception as e:
         print(f"⚠️ Email failed (message still saved to DB): {e}")
+
+  
 
 # ── ROUTES ────────────────────────────────────────────
 @app.route('/')
