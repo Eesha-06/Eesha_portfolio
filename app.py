@@ -42,7 +42,7 @@ def send_email_notification(name, email, subject, message):
 
     resend.Emails.send({
         "from": "onboarding@resend.dev",
-        "to": GMAIL_USER,
+        "to": "eesha7430@gmail.com",
         "subject": f"New Portfolio Message: {subject}",
         "html": f"""
         <h2>New Portfolio Contact</h2>
