@@ -4,6 +4,7 @@ import smtplib
 import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import resend
 
 app = Flask(__name__)
 
@@ -36,50 +37,25 @@ def init_db():
 
 # ── EMAIL ─────────────────────────────────────────────
 def send_email_notification(name, email, subject, message):
-    try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = f"📬 New Contact Form Message: {subject}"
-        msg['From'] = GMAIL_USER
-        msg['To'] = GMAIL_USER
 
-        html = f"""
-        <html>
-        <body>
-            <h2>New Portfolio Message</h2>
-            <p><b>Name:</b> {name}</p>
-            <p><b>Email:</b> {email}</p>
-            <p><b>Subject:</b> {subject}</p>
-            <p><b>Message:</b> {message}</p>
-        </body>
-        </html>
+    resend.api_key = os.getenv("RESEND_API_KEY")
+
+    resend.Emails.send({
+        "from": "onboarding@resend.dev",
+        "to": GMAIL_USER,
+        "subject": f"New Portfolio Message: {subject}",
+        "html": f"""
+        <h2>New Portfolio Contact</h2>
+
+        <p><b>Name:</b> {name}</p>
+        <p><b>Email:</b> {email}</p>
+        <p><b>Subject:</b> {subject}</p>
+
+        <p>{message}</p>
         """
+    })
 
-        msg.attach(MIMEText(html, 'html'))
-
-        print("STEP 1: Starting SMTP")
-
-        with smtplib.SMTP_SSL(
-            'smtp.gmail.com',
-            465,
-            timeout=10
-        ) as server:
-
-            print("STEP 2: Logging in")
-            server.login(GMAIL_USER, GMAIL_PASS)
-
-            print("STEP 3: Sending")
-            server.sendmail(
-                GMAIL_USER,
-                GMAIL_USER,
-                msg.as_string()
-            )
-
-            print("STEP 4: Done")
-
-        print(f"✅ Email notification sent for message from {name}")
-
-    except Exception as e:
-        print(f"⚠️ Email failed (message still saved to DB): {e}")
+    print("✅ Email sent via Resend")
 
   
 
