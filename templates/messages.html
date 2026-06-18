@@ -42,7 +42,7 @@
         <td>{{ msg.email }}</td>
         <td>{{ msg.subject }}</td>
         <td>{{ msg.message }}</td>
-        <td>{{ msg.submitted_at.strftime('%d %b %Y, %H:%M') }}</td>
+        <td>{{ msg['submitted_at'] }}</td>
       </tr>
       {% endfor %}
     </tbody>
